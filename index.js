@@ -44,17 +44,16 @@ app.get('/get_all_messages', async (req, res) => {
     let Receiver = req.query.one
     const snapshot = await msg.where('Receiver', '==', Receiver).get()
     if (snapshot.empty) {
-      console.log('No matching documents.')
       res.status(200).send('No matching documents.')
       return
     }
-    // await msg.where('Sender', '==', sender).set({ isRead: true })
     let back = ''
+    //update all the messages to read mode:
     snapshot.forEach((doc) => {
       msg.doc(doc.id).update({
         isRead: true,
       })
-      console.log(doc.id, '=>', doc.data().message)
+      // create the response with back arg:
       back +=
         'Sender: ' +
         doc.data().Sender +
@@ -78,11 +77,12 @@ app.get('/get_all_messages', async (req, res) => {
     res.status(500).send('500 Internal Server Error')
   }
 })
+// localhost:4000/get_all_unread?one=reciver1
+// get all the unread messages of spesific receiver
 app.get('/get_all_unread', async (req, res) => {
   try {
     const msg = db.collection('messages')
     let Receiver = req.query.one
-    // console.log(Receiver)
     const snapshot = await msg.where('Receiver', '==', Receiver).where('isRead', '==', false).get()
     if (snapshot.empty) {
       console.log('No matching documents.')
@@ -90,11 +90,12 @@ app.get('/get_all_unread', async (req, res) => {
       return
     }
     let back = ''
+    //update all the messages to read mode:
     snapshot.forEach((doc) => {
       msg.doc(doc.id).update({
         isRead: true,
       })
-      // console.log(doc.id, '=>', doc.data().message)
+      // create the response with back arg:
       back +=
         'Sender: ' +
         doc.data().Sender +
@@ -114,6 +115,71 @@ app.get('/get_all_unread', async (req, res) => {
         '\n'
     })
     res.status(200).send(back)
+  } catch {
+    res.status(500).send('500 Internal Server Error')
+  }
+})
+//localhost:4000/read_message?subject=this is subject4112
+//return the message with the spesific subject
+app.get('/read_message', async (req, res) => {
+  try {
+    const msg = db.collection('messages')
+    let subject = req.query.subject
+    // console.log(Receiver)
+    const snapshot = await msg.where('Subject', '==', subject).get()
+    if (snapshot.empty) {
+      console.log('No matching documents.')
+      res.status(200).send('No matching documents.')
+      return
+    }
+    let back = ''
+    snapshot.forEach((doc) => {
+      if (!doc.data().isRead) {
+        msg.doc(doc.id).update({
+          isRead: true,
+        })
+      }
+      back +=
+        'Sender: ' +
+        doc.data().Sender +
+        '\n' +
+        'Receiver: ' +
+        doc.data().Receiver +
+        '\n' +
+        'Subject: ' +
+        doc.data().Subject +
+        '\n' +
+        'Message: ' +
+        doc.data().message +
+        '\n' +
+        'Creation_data: ' +
+        doc.data().Creation_data +
+        '\n' +
+        '\n'
+    })
+    res.status(200).send(back)
+  } catch {
+    res.status(500).send('500 Internal Server Error')
+  }
+})
+
+//localhost:4000/delete_message?subject=this is subject12
+// delete the message that fit the subject from the user.
+app.delete('/delete_message', async (req, res) => {
+  try {
+    const msg = db.collection('messages')
+    let subject = req.query.subject
+    const snapshot = await msg.where('Subject', '==', subject).get()
+    if (snapshot.empty) {
+      console.log('No matching documents.')
+      res.status(200).send('No matching documents.')
+      return
+    }
+    let back = ''
+    snapshot.forEach((doc) => {
+      msg.doc(doc.id).delete()
+    })
+    res.status(200).send('Message Deleted')
   } catch {
     res.status(500).send('500 Internal Server Error')
   }
