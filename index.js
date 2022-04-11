@@ -7,6 +7,8 @@ const admin = require('firebase-admin')
 const serviceAccount = require('./ServiceAccountKey.json')
 const { async } = require('q')
 const setDoc = require('firebase/firestore')
+const PORT = process.env.PORT || 4000
+
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 })
@@ -185,4 +187,7 @@ app.delete('/delete_message', async (req, res) => {
   }
 })
 
-app.listen(4000, () => console.log('Up & running *4000'))
+app.listen(PORT, (err) => {
+  if (err) throw err
+  console.log('%c Server running', 'color: green')
+})
