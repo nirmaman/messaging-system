@@ -5,7 +5,7 @@ app.use(express.json())
 app.use(cors())
 const admin = require('firebase-admin')
 const serviceAccount = require('./ServiceAccountKey.json')
-const { async } = require('q')
+// const { async } = require('q')
 const setDoc = require('firebase/firestore')
 const PORT = process.env.PORT || 4000
 
