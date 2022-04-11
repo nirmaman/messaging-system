@@ -14,7 +14,6 @@ admin.initializeApp({
 })
 const db = admin.firestore()
 
-
 app.post('/create', async (req, res) => {
   try {
     let date_ob = new Date()
@@ -188,7 +187,7 @@ app.delete('/delete_message', async (req, res) => {
   }
 })
 
-app.listen(PORT, (err) => {
-  if (err) throw err
-  console.log('%c Server running', 'color: green')
+const server = app.listen(process.env.PORT || 5000, () => {
+  const port = server.address().port
+  console.log(`Express is working on port ${port}`)
 })
