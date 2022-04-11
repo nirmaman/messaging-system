@@ -187,6 +187,6 @@ app.delete('/delete_message', async (req, res) => {
   }
 })
 
-app.listen(PORT, () => {
-  console.log(`Express is working on port ${port}`)
+app.listen(PORT, function () {
+  console.log(`Express is working on port ${PORT}`)
 })
